@@ -1,0 +1,35 @@
+# ERC721 token ownership tracker
+
+NFT Token Tracker: 2022-02-15
+Description: The Nft tracker fetches the Nft ownership by analyzing all events occurred from ERC721 contracts of the Ehtereum mainnet, and keeps in the Neo4j db. It will be going to fetch the event from latest block every once in a minute.
+Environment Setup:
+  - Install Python 3.x.
+  - Install dependencies package
+    ``` bash
+    pip install -r requirements.txt
+    ```
+Neo4j Database: 
+    Connection URI: bolt://1**.3*.7*.1**:7687
+    User ID: C****
+    Password: C**********
+Infura Url: https://mainnet.infura.io/v3/0f9fab07058c4d90afd7b3f6014d491f
+  
+Database Schema:
+  (:NftCollection { address: '0x...' })-[:PartOf]->(:Nft { id: '0x...' })<-[:Owned { since: <timestamp> }]-(:EtherAddress { address: '0x...' })
+
+  Node: NftCollection
+    Properties:
+      - address: contract address
+  Node: Nft
+    Properties:
+      - id: nft id
+  Node: EtherAddress
+    Properties:
+      - address : nft owner's address
+  Relation: Owned
+    Properties:
+      - since : owned time
+
+Fixed Issues:
+  Case 1: Nft is linked to only one collection. In a word, a Nft can't be linked on several collections.
+    Description: If Nft linked to any collection exists already on the db, tracker will create new Nft node and make new relationship with other collection. Currently, this issue has been fixed.
